@@ -13,3 +13,10 @@ JS Code to view "Orobie Edicola Digitale"
 ```
 document.querySelectorAll('.vc_wall_pay, .modal-backdrop.fade.in').forEach(el => el.style.display = 'none');
 ```
+
+---
+## 🌐 Webapp
+
+<a href="https://github.com/and96/REPOSITORY/raw/refs/heads/main/orobie-jailbreak-webapp.html" download>
+  ⬇️ Download orobie-jailbreak-webapp.html
+</a>
