@@ -17,6 +17,6 @@ document.querySelectorAll('.vc_wall_pay, .modal-backdrop.fade.in').forEach(el =>
 ---
 ## 🌐 Webapp
 
-<a href="https://github.com/and96/OrobieUnlock/raw/refs/heads/main/orobie-jailbreak-webapp.html" download>
+<a href="blob:https://github.com/e46c4866-e334-44d1-ba24-30838eaf51b1" download>
   ⬇️ Download orobie-jailbreak-webapp.html
 </a>
