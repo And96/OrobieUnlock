@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="it" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#181818">
+  <meta name="color-scheme" content="dark">
+  <title>Orobie Magazine</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <style>
+    :root {
+      --md-primary: #181818;
+      --md-primary-dark: #121212;
+      --md-surface: #121212;
+      --md-card: #1e1e1e;
+      --md-surface-variant: #2a2a2a;
+      --md-on-surface: #e8e8e8;
+      --md-on-surface-variant: #c4c4c4;
+      --md-outline: #3d3d3d;
+    }
+
+    html, body {
+      overscroll-behavior: none;
+      min-height: 100%;
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* Niente selezione testo / menu "Cerca con Google" al tocco prolungato. */
+    html, body, * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .text-secondary,
+    .text-muted {
+      color: var(--md-on-surface-variant) !important;
+    }
+
+    .material-icons-round {
+      font-size: 22px;
+      vertical-align: middle;
+    }
+
+    .appbar {
+      background: var(--md-primary);
+      color: white;
+      min-height: 64px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.5);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .appbar-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: .1px;
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 14px 40px;
+    }
+
+    .year-select {
+      width: auto;
+      max-width: 130px;
+      border-radius: 10px;
+      border: 0;
+      background-color: #2a2a2a;
+      color: var(--md-on-surface);
+      min-height: 40px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      font-weight: 600;
+    }
+
+    a.month-card {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .month-card {
+      border: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--md-card);
+      color: var(--md-on-surface);
+      box-shadow: 0 1px 3px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.4);
+      height: 100%;
+      transition: transform .16s ease, box-shadow .16s ease;
+      cursor: pointer;
+    }
+
+    .month-card:not(.disabled):hover {
+      background: #262626;
+      box-shadow: 0 4px 12px rgba(0,0,0,.6);
+    }
+
+    .month-card:not(.disabled):active {
+      background: #2e2e2e;
+      transform: scale(.98);
+    }
+
+    .month-card.disabled {
+      cursor: default;
+      opacity: .5;
+    }
+
+    .cover-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: var(--md-surface-variant);
+      overflow: hidden;
+    }
+
+    .cover { opacity: 0; transition: opacity .2s ease; }
+    .cover.ready { opacity: 1; }
+
+    .cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      font-weight: 700;
+      color: var(--md-on-surface-variant);
+      background: var(--md-surface-variant);
+      font-size: .8rem;
+      letter-spacing: .06em;
+    }
+
+    .month-info {
+      padding: 14px 16px 16px;
+    }
+
+    .month-number {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--md-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .month-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .reader {
+      background: #111;
+      min-height: calc(100vh - 64px);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    }
+
+    .reader-title {
+      padding: 10px 14px 8px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1rem;
+      background: #111;
+    }
+
+    .reader-image-area {
+      width: 100%;
+      background: #111;
+      overflow: hidden;
+      position: relative;
+      touch-action: pan-y;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 45vh;
+    }
+
+    #pageImage {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      transform-origin: center center;
+      will-change: transform;
+      cursor: zoom-in;
+    }
+
+    #pageImage.zoomed {
+      cursor: grab;
+    }
+
+    #pageImage.dragging {
+      cursor: grabbing;
+    }
+
+    .reader-image-area.zoomed { touch-action: none; }
+
+    .toast-msg {
+      position: fixed;
+      left: 50%;
+      bottom: calc(90px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      background: rgba(30,30,30,.95);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: .9rem;
+      z-index: 3000;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .reader-controls {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      background: #181818;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+
+    .reader-btn {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color .15s ease;
+    }
+
+    .reader-btn .material-icons-round { font-size: 26px; }
+
+    .reader-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,.10);
+      color: #fff;
+    }
+
+    .reader-btn:active:not(:disabled) {
+      background: rgba(255,255,255,.22);
+      color: #fff;
+    }
+
+    .reader-btn:disabled {
+      opacity: .35;
+    }
+
+    .page-indicator {
+      min-width: 64px;
+      text-align: center;
+      font-weight: 600;
+      font-size: .95rem;
+    }
+
+    .reader-top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #181818;
+    }
+
+    .loading {
+      position: absolute;
+      left: 0; right: 0; top: 0; bottom: 0;
+      z-index: 5;
+      background: rgba(17,17,17,.55);
+      min-height: 40vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: #bbb;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #444;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-page {
+      min-height: 40vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+      color: #ddd;
+    }
+
+    @media (min-width: 768px) {
+      .page-container {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .months-grid {
+        --bs-gutter-x: 1.25rem;
+        --bs-gutter-y: 1.25rem;
+      }
+    }
+
+    /* Su PC, la pagina rimane leggibile senza diventare gigantesca. */
+    @media (min-width: 992px) {
+      .reader-image-area {
+        min-height: 60vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const MONTHS = [
+        "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+        "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+      ];
+
+      const CURRENT_YEAR = new Date().getFullYear();
+      const CURRENT_MONTH = new Date().getMonth() + 1;
+
+      // Anni disponibili nel selettore. 
+      const MIN_YEAR = 2017;
+      const MAX_YEAR = CURRENT_YEAR;
+
+      const BASE_THUMB =
+        "https://edicoladigitale.orobie.it/sesaab/webservice/getThumb.jsp" +
+        "?edition={edition}&height=400&half=false";
+
+      const BASE_PAGE =
+        "https://edicoladigitale.orobie.it/sesaab/books/orobie/{year}/{edition}/images/pages/Page-{page}.jpg";
+
+      const app = document.getElementById("app");
+
+      let selectedYear = CURRENT_YEAR;
+      let currentPage = 1;
+      let currentEdition = null;
+      let navToken = 0;
+      // Stato del pulsante avanti: pending | ok | end | unknown (errore di rete)
+      let nextState = "pending";
+      let lastCheck = 0;
+      const RECHECK_MS = 5000;
+
+      // ---------- Cache (memoria + Cache API, nessun permesso richiesto) ----------
+      const CACHE_NAME = "orobie-img-v1";
+      const MAX_AGE = 5 * 60 * 1000;        // 5 minuti
+      const MAX_ITEMS = 100;                // max immagini
+      const MAX_BYTES = 30 * 1024 * 1024;   // 30 MB (sicuro anche su browser vecchi)
+      const mem = new Map();                // url -> {obj, t, size}
+      const inflight = new Map();
+      let hasCaches = false;
+      try { hasCaches = typeof caches !== "undefined" && !!caches.open; } catch (e) {}
+      let corsOk = false, corsBlocked = false, corsReady = null, lastPrune = 0;
+
+      function fresh(url) {
+        const e = mem.get(url);
+        if (!e) return null;
+        if (Date.now() - e.t > MAX_AGE) { dropMem(url); return null; }
+        return e;
+      }
+
+      function dropMem(url) {
+        const e = mem.get(url);
+        if (e) { try { URL.revokeObjectURL(e.obj); } catch (x) {} mem.delete(url); }
+      }
+
+      function pruneMem() {
+        const now = Date.now();
+        for (const [u, e] of [...mem]) if (now - e.t > MAX_AGE) dropMem(u);
+        let bytes = 0;
+        mem.forEach(e => { bytes += e.size; });
+        const order = [...mem.entries()].sort((a, b) => a[1].t - b[1].t);
+        while (order.length && (order.length > MAX_ITEMS || bytes > MAX_BYTES)) {
+          const [u, e] = order.shift();
+          bytes -= e.size;
+          dropMem(u);
+        }
+      }
+
+      async function pruneStore() {
+        pruneMem();
+        if (!hasCaches) return;
+        lastPrune = Date.now();
+        try {
+          const c = await caches.open(CACHE_NAME);
+          const keys = await c.keys();
+          const now = Date.now(), list = [];
+          for (const rq of keys) {
+            const r = await c.match(rq);
+            const t = Number(r && r.headers.get("x-ts")) || 0;
+            const sz = Number(r && r.headers.get("x-size")) || 0;
+            if (now - t > MAX_AGE) await c.delete(rq); else list.push({ rq, t, sz });
+          }
+          list.sort((a, b) => a.t - b.t);
+          let bytes = list.reduce((n, x) => n + x.sz, 0);
+          while (list.length && (list.length > MAX_ITEMS || bytes > MAX_BYTES)) {
+            const x = list.shift();
+            bytes -= x.sz;
+            await c.delete(x.rq);
+          }
+        } catch (e) {}
+      }
+
+      function remember(url, blob, t, persist) {
+        dropMem(url);
+        mem.set(url, { obj: URL.createObjectURL(blob), t, size: blob.size });
+        pruneMem();
+        if (persist && hasCaches) {
+          caches.open(CACHE_NAME).then(c => c.put(url, new Response(blob, {
+            headers: {
+              "Content-Type": blob.type || "image/jpeg",
+              "x-ts": String(t),
+              "x-size": String(blob.size)
+            }
+          }))).then(() => {
+            if (Date.now() - lastPrune > 60000) pruneStore();
+          }).catch(() => {});
+        }
+        return { status: "ok", src: mem.get(url).obj };
+      }
+
+      // Se il server non permette fetch (CORS) si usa il normale <img>.
+      function probeImg(url) {
+        return new Promise(resolve => {
+          const im = new Image();
+          const timer = setTimeout(() => { im.onload = im.onerror = null; resolve({ status: "network" }); }, 20000);
+          im.onload = () => {
+            clearTimeout(timer);
+            if (!corsOk) corsBlocked = true;
+            dropMem(url);
+            mem.set(url, { obj: url, t: Date.now(), size: 300 * 1024, img: im });
+            pruneMem();
+            resolve({ status: "ok", src: url, el: im });
+          };
+          im.onerror = () => {
+            clearTimeout(timer);
+            resolve({ status: corsBlocked && navigator.onLine !== false ? "missing" : "network" });
+          };
+          im.src = url;
+        });
+      }
+
+      async function loadImage(url, force) {
+        if (!force && hasCaches) {
+          try {
+            const c = await caches.open(CACHE_NAME);
+            const r = await c.match(url);
+            if (r) {
+              const t = Number(r.headers.get("x-ts")) || 0;
+              if (Date.now() - t <= MAX_AGE) return remember(url, await r.blob(), t, false);
+              c.delete(url);
+            }
+          } catch (e) {}
+        }
+        if (!corsOk && !corsBlocked && corsReady) await corsReady;
+        if (corsBlocked && !corsOk) return probeImg(url);
+        let release = null;
+        if (!corsOk && !corsBlocked && !corsReady) {
+          corsReady = new Promise(r => { release = r; });
+        }
+        let timer;
+        try {
+          const opts = { cache: force ? "reload" : "default" };
+          if (typeof AbortController !== "undefined") {
+            const ctl = new AbortController();
+            opts.signal = ctl.signal;
+            timer = setTimeout(() => ctl.abort(), 20000);
+          }
+          const r = await fetch(url, opts);
+          clearTimeout(timer);
+          if (!r.ok) return { status: r.status >= 500 ? "network" : "missing" };
+          const b = await r.blob();
+          if (!/^image\//.test(b.type)) return { status: "missing" };
+          corsOk = true;
+          return remember(url, b, Date.now(), true);
+        } catch (e) {
+          clearTimeout(timer);
+          return await probeImg(url);
+        } finally {
+          if (release) { corsReady = null; release(); }
+        }
+      }
+
+      // Restituisce {status:'ok'|'missing'|'network', src}
+      function getImage(url, force) {
+        if (!force) {
+          const e = fresh(url);
+          if (e) return Promise.resolve({ status: "ok", src: e.obj, el: e.img });
+          if (inflight.has(url)) return inflight.get(url);
+        }
+        const p = loadImage(url, force).then(r => { inflight.delete(url); return r; });
+        inflight.set(url, p);
+        return p;
+      }
+
+      function toast(msg) {
+        const old = document.getElementById("toastMsg");
+        if (old) old.remove();
+        const d = document.createElement("div");
+        d.id = "toastMsg";
+        d.className = "toast-msg";
+        d.textContent = msg;
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 2600);
+      }
+
+      // Stato dello zoom del lettore.
+      let zoom = 1;
+      let offsetX = 0;
+      let offsetY = 0;
+      let pointers = new Map();
+      let dragStart = null;
+      let pinchStart = null;
+
+      function editionFor(year, month) {
+        return `${year}${String(month).padStart(2, "0")}01orobie`;
+      }
+
+      function thumbUrl(edition) {
+        return BASE_THUMB.replace("{edition}", edition);
+      }
+
+      function pageUrl(year, edition, page) {
+        return BASE_PAGE
+          .replace("{year}", year)
+          .replace("{edition}", edition)
+          .replace("{page}", page);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderHome() {
+        pruneStore();
+        navToken++;
+        currentPage = 1;
+        currentEdition = null;
+        resetZoom();
+
+        const years = [];
+        for (let y = MAX_YEAR; y >= MIN_YEAR; y--) years.push(y);
+
+        app.innerHTML = `
+          <header class="appbar d-flex align-items-center">
+            <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
+              <div class="appbar-title">Orobie Magazine</div>
+              <select id="yearSelect" class="form-select year-select" aria-label="Seleziona anno">
+                ${years.map(y =>
+                  `<option value="${y}" ${y === selectedYear ? "selected" : ""}>${y}</option>`
+                ).join("")}
+              </select>
+            </div>
+          </header>
+
+          <main class="page-container">
+            <div class="mb-4">
+              <h1 class="h3 fw-bold mb-1">Le riviste</h1>
+              <div class="text-secondary">Scegli l'anno e sfoglia le edizioni.</div>
+            </div>
+
+            <div id="monthsGrid" class="row row-cols-2 row-cols-md-3 row-cols-lg-4
+                                        row-cols-xl-5 g-3 months-grid"></div>
+          </main>
+        `;
+
+        document.getElementById("yearSelect").addEventListener("change", e => {
+          selectedYear = Number(e.target.value);
+          renderMonths();
+        });
+
+        renderMonths();
+      }
+
+      function monthsToShow(year) {
+        if (year === CURRENT_YEAR) {
+          // Nell'anno corrente: tutti i mesi trascorsi + mese corrente + il successivo.
+          return Math.min(12, CURRENT_MONTH + 1);
+        }
+        return 12;
+      }
+
+      function renderMonths() {
+        const grid = document.getElementById("monthsGrid");
+        const count = monthsToShow(selectedYear);
+        const cards = [];
+
+        for (let month = 1; month <= count; month++) {
+          const edition = editionFor(selectedYear, month);
+          const isFuture = selectedYear === CURRENT_YEAR && month > CURRENT_MONTH;
+          const isPastYear = selectedYear < CURRENT_YEAR;
+
+          let status = "";
+          if (isFuture) {
+            status = "NON ANCORA DISPONIBILE";
+          }
+
+          const disabledClass = isFuture ? "disabled" : "";
+
+          const tag = isFuture ? "article" : "a";
+          const attrs = isFuture ? "" : `href="?anno=${selectedYear}&mese=${month}"`;
+
+          cards.push(`
+            <div class="col">
+              <${tag}
+                class="month-card ${disabledClass}"
+                data-year="${selectedYear}"
+                data-month="${month}"
+                ${attrs}
+              >
+                <div class="cover-wrap">
+                  ${
+                    isFuture
+                    ? `<div class="cover-placeholder">${status}</div>`
+                    : `
+                      <img
+                        class="cover"
+                        alt="" data-alt="${MONTHS[month - 1]} ${selectedYear}"
+                        data-edition="${edition}"
+                        data-year="${selectedYear}"
+                        data-month="${month}"
+                        data-thumb="1"
+                      >
+                    `
+                  }
+                </div>
+
+                <div class="month-info">
+                  <div class="month-number">Mese ${String(month).padStart(2, "0")}</div>
+                  <div class="month-name">${MONTHS[month - 1]}</div>
+                  ${isFuture ? "" : `
+                    <div class="small text-secondary mt-1" data-status="${edition}">
+                      ${isPastYear ? "" : ""}
+                    </div>
+                  `}
+                </div>
+              </${tag}>
+            </div>
+          `);
+        }
+
+        grid.innerHTML = cards.join("");
+
+        // Miniature: dalla cache se presenti, caricate solo quando visibili.
+        const loadThumb = async img => {
+          const edition = img.dataset.edition, year = Number(img.dataset.year);
+          let r = await getImage(thumbUrl(edition));
+          if (r.status === "missing") r = await getImage(pageUrl(year, edition, 1));
+          if (r.status === "ok") {
+            img.onload = () => { img.alt = img.dataset.alt || ""; img.classList.add("ready"); };
+            img.src = r.src;
+            return;
+          }
+          const wrap = img.closest(".cover-wrap");
+          const ph = document.createElement("div");
+          ph.className = "cover-placeholder";
+          ph.textContent = r.status === "missing" ? "NON TROVATO" : "NON DISPONIBILE";
+          img.remove();
+          if (wrap) wrap.appendChild(ph);
+        };
+        const thumbs = grid.querySelectorAll("img[data-thumb]");
+        if ("IntersectionObserver" in window) {
+          const io = new IntersectionObserver(entries => {
+            entries.forEach(en => {
+              if (en.isIntersecting) { io.unobserve(en.target); loadThumb(en.target); }
+            });
+          }, { rootMargin: "200px" });
+          thumbs.forEach(i => io.observe(i));
+        } else {
+          thumbs.forEach(loadThumb);
+        }
+
+        grid.querySelectorAll(".month-card:not(.disabled)").forEach(card => {
+          const open = () => {
+            openReader(
+              Number(card.dataset.year),
+              Number(card.dataset.month)
+            );
+          };
+
+          // Click normale: apre nella stessa scheda. Tocco prolungato / ctrl-click:
+          // lasciano il menu di Chrome ("Apri in nuova scheda").
+          card.addEventListener("click", e => {
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+            e.preventDefault();
+            open();
+          });
+        });
+      }
+
+      function openReader(year, month) {
+        currentEdition = editionFor(year, month);
+        currentPage = 1;
+        nextState = "pending";
+        navToken++;
+        history.pushState({ r: 1 }, "");
+
+        app.innerHTML = `
+          <div class="reader">
+            <div class="reader-top">
+              <div class="d-flex align-items-center px-2 py-2">
+                <button id="backHome" class="btn reader-btn" title="Torna alla home"
+                        aria-label="Torna alla home">
+                  <span class="material-icons-round">home</span>
+                </button>
+                <div class="flex-grow-1 text-center fw-semibold">
+                  Mese ${String(month).padStart(2, "0")} - ${MONTHS[month - 1]} ${year}
+                </div>
+                <button id="refreshBtn" class="btn reader-btn" title="Ricarica"
+                        aria-label="Ricarica">
+                  <span class="material-icons-round">refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="imageArea" class="reader-image-area">
+              <div class="loading" id="loading" style="display:none">
+                <div class="spinner"></div>
+                <div>Caricamento pagina...</div>
+              </div>
+              <img id="pageImage" alt="Pagina" draggable="false" style="display:none">
+              <div id="pageError" class="error-page" style="display:none">
+                <div>
+                  <div class="material-icons-round" style="font-size:48px">menu_book</div>
+                  <div class="mt-2" id="pageErrorText">Pagina non disponibile.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="reader-controls">
+              <button id="firstBtn" class="btn reader-btn" title="Vai a pagina 1"
+                      aria-label="Vai a pagina 1">
+                <span class="material-icons-round">first_page</span>
+              </button>
+              <button id="prevBtn" class="btn reader-btn" title="Pagina precedente"
+                      aria-label="Pagina precedente" disabled>
+                <span class="material-icons-round">chevron_left</span>
+              </button>
+              <button id="zoomOutBtn" class="btn reader-btn" title="Zoom indietro"
+                      aria-label="Zoom indietro">
+                <span class="material-icons-round">zoom_out</span>
+              </button>
+              <div id="pageIndicator" class="page-indicator">Pag. 1</div>
+              <button id="zoomInBtn" class="btn reader-btn" title="Zoom avanti"
+                      aria-label="Zoom avanti">
+                <span class="material-icons-round">zoom_in</span>
+              </button>
+              <button id="nextBtn" class="btn reader-btn" title="Pagina successiva"
+                      aria-label="Pagina successiva">
+                <span class="material-icons-round">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("backHome").addEventListener("click", () => {
+          if (history.state && history.state.r === 1) history.back(); else renderHome();
+        });
+        document.getElementById("refreshBtn").addEventListener("click", refreshCurrent);
+        document.getElementById("firstBtn").addEventListener("click", () => {
+          if (currentPage !== 1) loadPage(1);
+        });
+        document.getElementById("prevBtn").addEventListener("click", previousPage);
+        document.getElementById("nextBtn").addEventListener("click", nextPage);
+        document.getElementById("zoomInBtn").addEventListener("click", () => changeZoom(0.25));
+        document.getElementById("zoomOutBtn").addEventListener("click", () => changeZoom(-0.25));
+
+        setupGestures();
+        loadPage(1);
+      }
+
+      function urlOf(page) {
+        return pageUrl(selectedYear, currentEdition, page);
+      }
+
+      function showError(text) {
+        const loading = document.getElementById("loading");
+        const img = document.getElementById("pageImage");
+        const error = document.getElementById("pageError");
+        const t = document.getElementById("pageErrorText");
+        if (!loading || !img || !error) return;
+        loading.style.display = "none";
+        img.style.display = "none";
+        if (t) t.textContent = text;
+        error.style.display = "flex";
+      }
+
+      // Decodifica in anticipo: la pagina appare subito al cambio.
+      const warmed = new Map();
+      function warm(src, el) {
+        if (warmed.has(src)) return warmed.get(src);
+        const p = new Promise(resolve => {
+          const im = el || new Image();
+          let end = false;
+          const done = () => { if (!end) { end = true; resolve(im); } };
+          setTimeout(done, 3000);
+          if (!el) im.src = src;
+          if (im.decode) im.decode().then(done, done);
+          else if (im.complete) done();
+          else { im.onload = done; im.onerror = done; }
+        });
+        warmed.set(src, p);
+        if (warmed.size > 8) warmed.delete(warmed.keys().next().value);
+        return p;
+      }
+
+      function withTimeout(promise, ms) {
+        return new Promise(resolve => {
+          const t = setTimeout(() => resolve({ status: "network" }), ms);
+          promise.then(r => { clearTimeout(t); resolve(r); },
+                       () => { clearTimeout(t); resolve({ status: "network" }); });
+        });
+      }
+
+      async function loadPage(page, force) {
+        const img = document.getElementById("pageImage");
+        const loading = document.getElementById("loading");
+        const error = document.getElementById("pageError");
+        if (!img || !loading || !error) return;
+
+        const token = ++navToken;
+        currentPage = page;
+        nextState = fresh(urlOf(page + 1)) ? "ok" : "pending";
+        updateControls();
+        error.style.display = "none";
+
+        // La pagina precedente resta visibile; la scritta compare solo se serve >350 ms.
+        const hadImage = img.style.display !== "none";
+        const spin = setTimeout(() => {
+          if (token === navToken) loading.style.display = "flex";
+        }, hadImage ? 350 : 0);
+
+        try {
+          const r = await withTimeout(getImage(urlOf(page), force), 30000);
+          if (token !== navToken) return;
+
+          if (r.status !== "ok") {
+            showError(r.status === "missing"
+              ? "Pagina non disponibile."
+              : "Connessione assente. Premi ↻ in alto per riprovare.");
+            return;
+          }
+
+          preloadAround(page, token);
+          await warm(r.src, r.el);
+          if (token !== navToken) return;
+
+          resetZoom();
+          img.onerror = () => {
+            if (token !== navToken) return;
+            showError("Pagina non disponibile. Premi ↻ in alto per riprovare.");
+          };
+          img.src = r.src;
+          img.style.display = "block";
+          updateTransform();
+        } catch (e) {
+          if (token === navToken) showError("Errore di caricamento. Premi ↻ in alto per riprovare.");
+        } finally {
+          clearTimeout(spin);
+          if (token === navToken) loading.style.display = "none";
+        }
+      }
+
+      function setNext(status) {
+        if (status === "ok") nextState = "ok";
+        else if (status === "missing") nextState = "end";
+        else { nextState = "unknown"; lastCheck = Date.now(); }
+        updateControls();
+      }
+
+      // Avanti: 2 pagine. Indietro: 1 pagina. Richieste subito, in parallelo.
+      async function preloadAround(page, token) {
+        const pull = n => getImage(urlOf(n)).then(r => {
+          if (r.status === "ok") warm(r.src, r.el);
+          return r;
+        });
+        const first = pull(page + 1);
+        pull(page + 2);
+        if (page > 1) pull(page - 1);
+        const r = await first;
+        if (token !== navToken) return;
+        setNext(r.status);
+      }
+
+      async function refreshCurrent() {
+        if (!currentEdition) return;
+        lastCheck = 0;
+        await loadPage(currentPage, true);
+      }
+
+      let checking = false;
+      async function nextPage() {
+        if (checking || nextState === "end") return;
+        const target = currentPage + 1;
+
+        if (nextState === "unknown" && Date.now() - lastCheck < RECHECK_MS) {
+          toast("Connessione assente. Riprova tra qualche secondo.");
+          return;
+        }
+
+        if (nextState !== "ok") {
+          checking = true;
+          const r = await getImage(urlOf(target));
+          checking = false;
+          if (currentPage !== target - 1) return;
+          setNext(r.status);
+          if (r.status !== "ok") {
+            if (r.status === "network") toast("Connessione assente. Riprova tra qualche secondo.");
+            return;
+          }
+        }
+        loadPage(target);
+      }
+
+      function previousPage() {
+        if (currentPage <= 1) return;
+        loadPage(currentPage - 1);
+      }
+
+      function updateControls() {
+        const prev = document.getElementById("prevBtn");
+        const next = document.getElementById("nextBtn");
+        const indicator = document.getElementById("pageIndicator");
+        if (!prev || !next || !indicator) return;
+
+        prev.disabled = currentPage <= 1;
+        next.disabled = nextState === "end";
+        indicator.textContent = `Pag. ${currentPage}`;
+      }
+
+      // -------------------------
+      // Zoom + trascinamento
+      // -------------------------
+
+      function resetZoom() {
+        zoom = 1;
+        offsetX = 0;
+        offsetY = 0;
+        pointers.clear();
+        dragStart = null;
+        pinchStart = null;
+
+        const img = document.getElementById("pageImage");
+        if (img) {
+          img.classList.remove("zoomed", "dragging");
+          updateTransform();
+        }
+      }
+
+      function updateTransform() {
+        const img = document.getElementById("pageImage");
+        if (!img) return;
+
+        img.style.transform =
+          `translate3d(${offsetX}px, ${offsetY}px, 0) scale(${zoom})`;
+
+        img.classList.toggle("zoomed", zoom > 1.001);
+        const area = document.getElementById("imageArea");
+        if (area) area.classList.toggle("zoomed", zoom > 1.001);
+      }
+
+      function clampOffsets() {
+        const img = document.getElementById("pageImage");
+        const area = document.getElementById("imageArea");
+        if (!img || !area) return;
+
+        if (zoom <= 1) {
+          offsetX = 0;
+          offsetY = 0;
+          return;
+        }
+
+        const rect = area.getBoundingClientRect();
+        const maxX = Math.max(0, (img.clientWidth * zoom - rect.width) / 2);
+        const maxY = Math.max(0, (img.clientHeight * zoom - rect.height) / 2);
+
+        offsetX = Math.max(-maxX, Math.min(maxX, offsetX));
+        offsetY = Math.max(-maxY, Math.min(maxY, offsetY));
+      }
+
+      function changeZoom(delta, centerX = null, centerY = null) {
+        const oldZoom = zoom;
+        zoom = Math.max(1, Math.min(4, zoom + delta));
+
+        if (zoom === 1) {
+          offsetX = 0;
+          offsetY = 0;
+        } else if (centerX !== null && centerY !== null) {
+          // Mantiene abbastanza vicino il punto sotto le dita/cursore.
+          const factor = (zoom / oldZoom) - 1;
+          offsetX -= centerX * factor;
+          offsetY -= centerY * factor;
+        }
+
+        clampOffsets();
+        updateTransform();
+      }
+
+      function setupGestures() {
+        const area = document.getElementById("imageArea");
+        const img = document.getElementById("pageImage");
+        if (!area || !img) return;
+
+        let swipe = null, multi = false, swipedAt = 0;
+
+        area.addEventListener("pointerdown", e => {
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+          area.setPointerCapture?.(e.pointerId);
+
+          if (pointers.size === 1 && zoom <= 1.001) {
+            swipe = { x: e.clientX, y: e.clientY, t: Date.now() };
+            multi = false;
+          } else {
+            swipe = null;
+            multi = true;
+          }
+
+          if (pointers.size === 2) {
+            const pts = [...pointers.values()];
+            pinchStart = {
+              distance: Math.hypot(
+                pts[0].x - pts[1].x,
+                pts[0].y - pts[1].y
+              ),
+              zoom
+            };
+            dragStart = null;
+          } else if (zoom > 1) {
+            dragStart = {
+              x: e.clientX,
+              y: e.clientY,
+              offsetX,
+              offsetY
+            };
+            img.classList.add("dragging");
+          }
+        });
+
+        area.addEventListener("pointermove", e => {
+          if (!pointers.has(e.pointerId)) return;
+
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+          if (pointers.size === 2 && pinchStart) {
+            const pts = [...pointers.values()];
+            const distance = Math.hypot(
+              pts[0].x - pts[1].x,
+              pts[0].y - pts[1].y
+            );
+
+            zoom = Math.max(
+              1,
+              Math.min(4, pinchStart.zoom * (distance / pinchStart.distance))
+            );
+
+            clampOffsets();
+            updateTransform();
+            return;
+          }
+
+          if (zoom > 1 && dragStart) {
+            offsetX = dragStart.offsetX + (e.clientX - dragStart.x);
+            offsetY = dragStart.offsetY + (e.clientY - dragStart.y);
+            clampOffsets();
+            updateTransform();
+          }
+        });
+
+        const pointerEnd = e => {
+          if (e.type === "pointerup" && swipe && !multi && pointers.size === 1 && zoom <= 1.001) {
+            const dx = e.clientX - swipe.x;
+            const dy = e.clientY - swipe.y;
+            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 &&
+                Date.now() - swipe.t < 900) {
+              swipedAt = Date.now();
+              if (dx < 0) nextPage(); else previousPage();
+            }
+          }
+          swipe = null;
+          pointers.delete(e.pointerId);
+
+          if (pointers.size < 2) pinchStart = null;
+          if (pointers.size === 0) {
+            dragStart = null;
+            img.classList.remove("dragging");
+          }
+        };
+
+        area.addEventListener("pointerup", pointerEnd);
+        area.addEventListener("pointercancel", pointerEnd);
+        area.addEventListener("pointerleave", e => {
+          if (e.pointerType === "mouse") pointerEnd(e);
+        });
+
+        // Rotella del mouse / trackpad.
+        area.addEventListener("wheel", e => {
+          if (!img || img.style.display === "none") return;
+          e.preventDefault();
+
+          const rect = area.getBoundingClientRect();
+          const x = e.clientX - (rect.left + rect.width / 2);
+          const y = e.clientY - (rect.top + rect.height / 2);
+          changeZoom(e.deltaY < 0 ? 0.2 : -0.2, x, y);
+        }, { passive: false });
+
+        // Doppio tocco/click per zoom rapido.
+        let lastTap = 0;
+        area.addEventListener("click", e => {
+          const now = Date.now();
+          if (now - swipedAt < 500) return;
+          if (now - lastTap < 300) {
+            if (zoom > 1) {
+              resetZoom();
+            } else {
+              changeZoom(1);
+            }
+          }
+          lastTap = now;
+        });
+      }
+
+      // Tasto indietro di sistema: dalla rivista torna alla home.
+      window.addEventListener("popstate", () => {
+        if (currentEdition) renderHome();
+      });
+      history.replaceState({ r: 0 }, "");
+
+      // Home iniziale (pulisce anche la cache scaduta).
+      renderHome();
+
+      // Link diretto a una rivista (?anno=2026&mese=10), es. "apri in nuova scheda".
+      try {
+        const qs = new URLSearchParams(location.search);
+        const y = Number(qs.get("anno")), m = Number(qs.get("mese"));
+        if (y >= MIN_YEAR && y <= MAX_YEAR && m >= 1 && m <= 12) {
+          selectedYear = y;
+          openReader(y, m);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
